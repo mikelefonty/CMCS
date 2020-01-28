@@ -3,5 +3,7 @@
     "FIGSIZE_y": 8,
     "EPS":0,
     "DELAY":0.9,
-    "TITLE_SIZE":18
+    "TITLE_SIZE":18,
+    "MARKER_SIZE":600,
+    "TEXT_SIZE":13
 }

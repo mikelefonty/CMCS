@@ -25,3 +25,9 @@ class Constant_Reader:
 
     def get_title_size(self):
         return self.constants['TITLE_SIZE']
+    
+    def get_marker_size(self):
+        return self.constants['MARKER_SIZE']
+    
+    def get_text_size(self):
+        return self.constants['TEXT_SIZE']
