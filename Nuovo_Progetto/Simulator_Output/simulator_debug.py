@@ -1,3 +1,8 @@
+"""
+Questo file contiene l'implementazione della classe Simulator_Debug, che  
+si occupa di trasmettere a video l'evoluzione della simulazione, animando uno scatter plot.
+"""
+
 from matplotlib import pyplot as plt
 import sys
 import matplotlib as mpl
@@ -5,6 +10,16 @@ sys.path.append('../')
 
 class Simulator_Debug:
   
+  """
+  Costruttore della classe.
+
+  params:
+
+  - constants: Oggetto di tipo Constant_Reader. Contiene al suo interno i metodi per recuperare i valori delle costanti
+  - n_rows: Numero di righe della matrice che rappresenta l'ambiente
+  - n_cols : Numero di colonne della matrice che rappresenta l'ambiente
+  - title : Titolo dell'animazione.
+  """
   def __init__(self,constants,n_rows,n_cols,title=''):
     self.n_rows = n_rows
     self.n_cols = n_cols
@@ -21,6 +36,10 @@ class Simulator_Debug:
 
     self.__init_simulation()
    
+
+  """
+  Inizializza le strutture necessarie per la visualizzazione della simulazione.
+  """
 
   def __init_simulation(self):
     
@@ -39,7 +58,10 @@ class Simulator_Debug:
     plt.plot([self.n_cols-1 + self.EPS for x in range(self.n_rows+1)],[-x for x in range(self.n_rows+1)],linestyle="--",color="b")
  
 
-  def plot_particles(self):
+  """
+  Mostra a schermo lo stato della simulazione.
+  """
+  def __plot_particles(self):
 
     plt.suptitle(self.title,size=self.TITLE_SIZE)
     for part_id in self.particles.keys():
@@ -55,9 +77,20 @@ class Simulator_Debug:
       self.scatters[part_id] = (s,ann)
 
 
+  """
+  Aggiorna il titolo della simulazione. Tale valore non viene però mostrato a schermo.
+  """
   def __update_title(self,title):
     self.title = title
 
+  """
+  Aggiorna lo stato della simulazione. Aggiorna sia titolo sia la posizione degli agenti. Mostra a schermo i risultati ottenuti.
+
+  params:
+
+  - new_positions: Dizionario di elementi key:(x',y'). La particella di ID uguale a key si trova in (x',y').
+  - new_title : Se diverso da None, corrisponde al nuovo titolo da assegnare all'animazione.
+  """
   def update(self,new_positions,new_title=None):
     if new_title:
       self.__update_title(new_title)
@@ -65,5 +98,5 @@ class Simulator_Debug:
     for key in new_positions.keys():
       self.particles[key] = new_positions[key]
 
-    self.plot_particles()
+    self.__plot_particles()
     plt.waitforbuttonpress(self.DELAY)
