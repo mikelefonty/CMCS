@@ -2,6 +2,7 @@
 Questo file contiene le funzioni di utilità che permettono di lavorare con le matrici/sotto-matrici.
 """
 
+import math
 import numpy as np
 import sys
 sys.path.append("../")
@@ -40,7 +41,7 @@ def binarize_matrix(M, thresh=0.5):
      - se m < thresh -> m = 0
      - se m >= thresh -> m = 1
     """
-    
+
     N = np.zeros(M.shape)
     N[M >= thresh] = 1
     return N
@@ -67,15 +68,62 @@ def create_binary_matrix(k, prob_gen_1=0.5):
     M[k // 2, k // 2] = -1
     return M
 
+def __assign_resources(A, res_to_assign , center, limit):
+    
+    res_available_sx = center
+    res_available_dx = limit - center
+    resource_vec = np.array([res_available_sx, res_available_dx])
+    
+    idx_argmin = -1
+    idx_argmax = -1
+
+    if res_available_sx == res_available_dx:
+        idx_argmin = 0
+        idx_argmax = 1
+    else:
+        idx_argmin = np.argmin(resource_vec)
+        idx_argmax = np.argmax(resource_vec)
+
+    """
+    print('Resource vector:', resource_vec)
+    print('argmin ', idx_argmin)
+    print('argmax ', idx_argmax)
+    """
+
+    min_res_assigned = min(
+        res_to_assign, resource_vec[idx_argmin], res_to_assign//2)
+    max_res_assigned = min(
+        (res_to_assign-min_res_assigned), resource_vec[idx_argmax])
+    resource_vec[idx_argmin] = min_res_assigned
+    resource_vec[idx_argmax] = max_res_assigned
+
+    #print('Assigned Resource vector:', resource_vec)
+
+    return resource_vec
 
 def extract_sub_matrix(A, m, n, cx, cy):
     """
-    Estrae una sottomatrice di A di dimensione AL PIU' m x n, centrata in (cx,cy).
+    Estrae una sottomatrice di A di dimensione m x n, eventualmente centrata in (cx,cy).
     L'operazione non viene fatta utilizzando l'aritmetica modulare!
     """
-    assert 0<=cx<A.shape[0]
-    assert 0<=cy<A.shape[1]    
-    B = np.zeros(A.shape)
-    B = A[max(0, cx - (m // 2)): min(cx + (m//2) + (m % 2 > 0), A.shape[0]),
-          max(0, cy - (n // 2)):  min(cy + (n // 2) + (n % 2 > 0), A.shape[1])]
-    return B
+    assert 0 <= cx < A.shape[0]
+    assert 0 <= cy < A.shape[1]
+    assert m <= A.shape[0]
+    assert n <= A.shape[1]
+
+    #print(f"m={m}, n = {n}")
+
+    resource_vec_y = __assign_resources(A,n-1,cy,A.shape[1]-1)
+    y_s = cy - resource_vec_y[0]
+    y_e = cy + resource_vec_y[1]
+    
+    resource_vec_x = __assign_resources(A,m-1,cx,A.shape[0]-1)
+    x_s = cx - resource_vec_x[0]
+    x_e = cx + resource_vec_x[1]
+
+   # print(f'x in [{x_s},{x_e}], y in [{y_s},{y_e}]')
+    
+    result = A[x_s:x_e+1, y_s:y_e+1]
+    assert result.shape==(m,n)
+    
+    return result
