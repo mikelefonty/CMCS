@@ -3,9 +3,9 @@ sys.path.append('../')
 import numpy as np
 from Environment.environment import Environment
 
-def read_env_from_file(path):
+def read_env_from_file(path,verbose=False):
     """
-    Legge dal file una matrice e la carica in memoria
+    Legge dal file una matrice e crea l'environment ad essa associato
     :param path: Path del file da cui leggere la matrice
     :return: Matrice M letta da file.
     """
@@ -30,24 +30,19 @@ def read_env_from_file(path):
             current_line+=1
         
         matrix = np.array(l)
-        print(matrix)
-        """
-        l.append([int(num) for num in line.split(' ')] for line in f.readline()])
-        l = [[int(num) for num in line.split(' ')] for line in f]
+        if verbose:
+            print(f'Matrice letta dal file:\n{matrix}\n')
+      
+    agent_id = 1
 
-        matrix = np.array(l)
-       """
-    #matrix = np.zeros((n_rows,n_cols))
-    my_id = 1
-   
     env = Environment(n_rows,n_cols)
 
     for row in range(n_rows):
         for col in range(n_cols):
             if matrix[row,col] > 0:
-                #print(f'Adding agent {my_id} at position ({row},{col})')
-                env.add_agents({my_id:(row,col)})
-                my_id += 1
+                
+                env.add_agents({agent_id:(row,col)})
+                agent_id += 1
                 
     return env
 

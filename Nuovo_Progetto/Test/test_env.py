@@ -63,7 +63,7 @@ print(100*"-")
 print()
 print("Test env IO....")
 
-env = create_environment(5,7,10,"./env_prova.txt")
-env = read_env_from_file('./env_prova.txt')
+env = create_environment(5,7,10,"./env_prova.txt",)
+env = read_env_from_file('./env_prova.txt',verbose=True)
 
 print("Ambiente letto dal file:\n",env.get_env_matrix())
