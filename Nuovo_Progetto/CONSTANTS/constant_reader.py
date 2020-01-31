@@ -71,3 +71,6 @@ class Constant_Reader:
 
     def get_text_size(self):
         return self.constants['TEXT_SIZE']
+
+    def get_result_directory(self):
+        return self.constants['RESULT_DIRECTORY']
