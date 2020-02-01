@@ -10,6 +10,7 @@ from CONSTANTS.constant_reader import Constant_Reader
 from Util.data_structures import Direction
 from Util.print_utils import beautify_print_direction
 from Decide_Direction.decide_direction import sample_direction
+from Clustering.dbscan import DBSCAN 
 
 class Simulator:
 
@@ -88,4 +89,6 @@ class Simulator:
                 #print(f'Migliore Direzione = {str(best_direction)}') 
                 #print()
                 self.env.move_agent(agent,self.agents[agent].move(best_direction,self.env.get_env_matrix()))
-            self.debug_sym.update(self.env.get_agents_dict(),f'Iterazione {i+1}/{n_iters}')
+            
+            c,_ = DBSCAN(self.env.get_env_matrix(),self.env.get_agents_dict(),5,2)
+            self.debug_sym.update(self.env.get_agents_dict(),f'Iterazione {i+1}/{n_iters}\nDimensione media clusters = {len(c.keys())}')
