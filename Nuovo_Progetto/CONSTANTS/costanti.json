@@ -6,6 +6,16 @@
     "TITLE_SIZE":18,
     "MARKER_SIZE":300,
     "TEXT_SIZE":13,
-    "RESULT_DIRECTORY":"../Results"
+    "RESULT_DIRECTORY":"../Results",
+    "COLORS":["red","blue","green","yellow","cyan",
+        "brown","pink","purple","orange","steelblue",
+        "salmon","lime","gold","silver","indigo",
+        "lightgreen","lavender","bisque","darkkhaki","olive",
+        "tomato","sienna","chocolate","sandybrown","darkseagreen",
+        "forestgreen","springgreen","teal","darkturquoise","skyblue"
+        ],
+
+    "RADIUS":5,
+    "MIN_PTS":2
 
 }

@@ -74,3 +74,12 @@ class Constant_Reader:
 
     def get_result_directory(self):
         return self.constants['RESULT_DIRECTORY']
+
+    def get_colors(self):
+        return self.constants['COLORS']
+    
+    def get_radius(self):
+        return self.constants['RADIUS']
+    
+    def get_min_pts(self):
+        return self.constants['MIN_PTS']

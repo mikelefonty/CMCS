@@ -39,6 +39,8 @@ class Simulator_Debug:
 
         self.__init_simulation()
 
+        self.colors = constants.get_colors()
+
     @staticmethod
     def __handle_close(evt):
       print("CLOSE")
@@ -75,7 +77,7 @@ class Simulator_Debug:
   Mostra a schermo lo stato della simulazione.
   """
 
-    def __plot_particles(self):
+    def __plot_particles(self,clusters={}):
 
         plt.suptitle(self.title, size=self.TITLE_SIZE)
         for part_id in self.particles.keys():
@@ -87,7 +89,22 @@ class Simulator_Debug:
             y = -self.particles[part_id][0]
             ann = plt.annotate(str(part_id), (x-0.1, y-0.1),
                                size=self.TEXT_SIZE)
-            s = plt.scatter(x, y, s=self.MARKER_SIZE, c="red")
+            
+            n_clusters = len(clusters.keys())
+
+            if n_clusters == 0 or n_clusters > len(self.colors):
+              s = plt.scatter(x, y, s=self.MARKER_SIZE, c="red")
+            else:
+              cluster_id = 0
+              found = False
+            
+              while not found and cluster_id < n_clusters:
+                if part_id in clusters[cluster_id]:
+                  s = plt.scatter(x, y, s=self.MARKER_SIZE, c=self.colors[cluster_id])
+                  found = True
+                else:
+                  cluster_id += 1
+
 
             self.scatters[part_id] = (s, ann)
 
@@ -107,12 +124,12 @@ class Simulator_Debug:
   - new_title : Se diverso da None, corrisponde al nuovo titolo da assegnare all'animazione.
   """
 
-    def update(self, new_positions, new_title=None):
+    def update(self, new_positions, new_title=None,clusters={}):
         if new_title:
             self.__update_title(new_title)
 
         for key in new_positions.keys():
             self.particles[key] = new_positions[key]
 
-        self.__plot_particles()
+        self.__plot_particles(clusters)
         plt.waitforbuttonpress(self.DELAY)

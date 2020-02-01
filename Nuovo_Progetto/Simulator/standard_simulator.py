@@ -21,7 +21,14 @@ class Simulator:
         else:
             self.constants = Constant_Reader()
 
+        
+        self.radius = self.constants.get_radius()
+        self.min_pts = self.constants.get_min_pts()
+        
         self.env = read_env_from_file(env_file)
+
+
+
         self.neigh_size = neigh_size
         self.seed = seed
         self.use_stochastic_sim = use_stochastic_sim
@@ -65,19 +72,16 @@ class Simulator:
         
         for i in range(n_iters):
             
-            #print('Iterazione ',i+1)
+           
             if i == 0 and not self.use_random_selection:
                agents_order = sorted(agents_order)
 
             if self.use_random_selection:   
                 np.random.shuffle(agents_order)
-                #print('Random selection: ',agents_order)
-            else:
-                pass
-                #print('Sequential selection : ',agents_order)
-
+               
+            
             for agent in agents_order:
-               # print(f'Agente {agent}: \nDistribuzione :') 
+             
                 direction_distribution = self.agents[agent].next_direction(self.env.get_env_matrix(),self.neigh_size,verbose=False)
 
                 if self.use_stochastic_sim:
@@ -85,10 +89,10 @@ class Simulator:
                 else:
                     best_direction = Direction(np.argmax(direction_distribution))
                
-                #beautify_print_direction(direction_distribution) 
-                #print(f'Migliore Direzione = {str(best_direction)}') 
-                #print()
+             
                 self.env.move_agent(agent,self.agents[agent].move(best_direction,self.env.get_env_matrix()))
             
-            c,_ = DBSCAN(self.env.get_env_matrix(),self.env.get_agents_dict(),5,2)
-            self.debug_sym.update(self.env.get_agents_dict(),f'Iterazione {i+1}/{n_iters}\nDimensione media clusters = {len(c.keys())}')
+            c,_ = DBSCAN(self.env.get_env_matrix(),self.env.get_agents_dict(),self.radius,self.min_pts)
+            self.debug_sym.update(self.env.get_agents_dict(),
+                                new_title=f'Iterazione {i+1}/{n_iters}\nNumero totale di clusters = {len(c.keys())}',
+                                clusters = c)
