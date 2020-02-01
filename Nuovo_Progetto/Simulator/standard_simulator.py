@@ -14,14 +14,15 @@ from Clustering.dbscan import DBSCAN
 
 class Simulator:
 
-    def __init__(self,env_file,constants_path=None,show_anim=True,seed=42,use_random_selection=False,neigh_size=5,use_stochastic_sim = True):
+    def __init__(self,env_file,constants_path=None,show_anim=True,seed=42,use_random_selection=False,neigh_size=5,use_stochastic_sim = True,log_file="risultati_standard_sim"):
 
         if constants_path:
             self.constants = Constant_Reader(constants_path)
         else:
             self.constants = Constant_Reader()
 
-        
+        self.log_file = log_file
+
         self.radius = self.constants.get_radius()
         self.min_pts = self.constants.get_min_pts()
         
@@ -39,32 +40,36 @@ class Simulator:
 
         self.env_rows, self.env_cols = self.env.get_environment_dimensions()
       
-        print(self.env.get_env_matrix())
-        
+       
         self.agents = {}
         for i in self.env.get_agents_id_list():
             x,y = self.env.get_agent_position(i)
             self.agents[i] = Agent(i,x,y)
 
-        for _,agent in self.agents.items():
-            print(f'Agent {agent.get_id()} --> {agent.get_current_position()}')
+        if self.log_file:
+            self.logger_clusters = Logger(self.constants,self.log_file+'_clusters',['Iterazione','Cluster','Positions'],append=False)
+            self.logger_measures = Logger(self.constants,self.log_file+'_measures',['Iterazione','Misura'],append=False)
+            self.logger_matrix = Logger(self.constants,self.log_file+'_matrix',['Iterazione','Ambiente'],append=False)
+            self.logger_meta = Logger(self.constants,self.log_file+'_meta',['Numero_Righe','Numero_Colonne','Raggio_Vicinato',
+                                                                            'Tipo_Simulatore','Numero_Iterazioni'],append=False)
+            
 
-        print(self.env_rows,self.env_cols)
-
-        self.logger = Logger(self.constants,'prova_all',['Iterazione','Misura','Tipo_Simulatore','Dimensione_Neigh','Environment_Usato',
-                                        'Environment_Inizio_Iterazione','Environment_Fine_Iterazione',
-                                        'Dizionario_Azioni_Agenti'],append=False)
-        
-        self.logger.save_results()
-
+            self.logger_matrix.add_row({'Iterazione':0,'Ambiente':np.copy(self.env.get_env_matrix())})
+            self.logger_clusters.add_row({'Iterazione':0,'Cluster':{},'Positions':self.env.get_agents_dict()})
+     
         self.show_anim = show_anim
         if show_anim:
             self.debug_sym = Simulator_Debug(self.constants,self.env_rows,self.env_cols)
-        
+
 
 
     def simulate(self,n_iters):
         
+        if self.log_file:
+            self.logger_meta.add_row({'Numero_Righe':self.env_rows,'Numero_Colonne':self.env_cols,'Raggio_Vicinato':self.neigh_size,
+                                    'Tipo_Simulatore':'Standard','Numero_Iterazioni':n_iters})
+            self.logger_meta.save_results()
+
         if self.show_anim:
             self.debug_sym.update(self.env.get_agents_dict())
 
@@ -96,3 +101,14 @@ class Simulator:
             self.debug_sym.update(self.env.get_agents_dict(),
                                 new_title=f'Iterazione {i+1}/{n_iters}\nNumero totale di clusters = {len(c.keys())}',
                                 clusters = c)
+            
+            if self.log_file:
+                self.logger_measures.add_row({'Iterazione':i+1,'Misura':len(c.keys())})
+                self.logger_matrix.add_row({'Iterazione':i+1,'Ambiente':np.copy(self.env.get_env_matrix())})
+                self.logger_clusters.add_row({'Iterazione':0,'Cluster':c,'Positions':self.env.get_agents_dict()})
+
+        
+        if self.log_file:
+            self.logger_clusters.save_results()
+            self.logger_matrix.save_results()
+            self.logger_measures.save_results()

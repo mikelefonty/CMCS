@@ -16,7 +16,7 @@ class Logger:
         if not os.path.isdir(constants.get_result_directory()):
             os.makedirs(constants.get_result_directory())
         
-        self.result_path= constants.get_result_directory() + "/"+result_path+".csv"
+        self.result_path= constants.get_result_directory() + "/"+result_path+".json"
         
         #print(self.result_path)
         
@@ -39,7 +39,7 @@ class Logger:
         self.results_df = self.results_df.append(pd.Series(row,index=self.results_df.columns),ignore_index=True)
     
     def save_results(self):
-        self.results_df.to_csv(self.result_path,index=False)
+        self.results_df.to_json(self.result_path)
 
     def get_results(self):
         return self.results_df
