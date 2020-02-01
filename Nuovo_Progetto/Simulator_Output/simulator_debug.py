@@ -9,6 +9,7 @@ import matplotlib as mpl
 sys.path.append('../')
 
 
+
 class Simulator_Debug:
 
     """
@@ -38,6 +39,11 @@ class Simulator_Debug:
 
         self.__init_simulation()
 
+    @staticmethod
+    def __handle_close(evt):
+      print("CLOSE")
+      sys.exit(1)
+
     """
   Inizializza le strutture necessarie per la visualizzazione della simulazione.
   """
@@ -45,22 +51,25 @@ class Simulator_Debug:
     def __init_simulation(self):
 
         plt.ion()
-        plt.figure(figsize=self.FIGSIZE)
+        fig = plt.figure(figsize=self.FIGSIZE)
+        fig.canvas.mpl_connect('close_event',Simulator_Debug.__handle_close)
         plt.xticks(range(0, self.n_cols))
-        plt.yticks(range(-self.n_rows, 1))
-        plt.ylim([-self.n_rows-0.5, 0.5])
+        plt.yticks(range(-self.n_rows+1, 1),labels=reversed(range(self.n_rows)))
+        plt.ylim([-self.n_rows+1-0.5, 0.5])
         plt.xlim([-0.5, self.n_cols-1+0.5])
         plt.grid()
 
         # DISEGNA I BORDI!!!
         plt.plot([self.EPS for x in range(self.n_cols)],
-                 linestyle="--", color="b")
-        plt.plot([-self.n_rows - self.EPS for x in range(self.n_cols)],
-                 linestyle="--", color="b")
-        plt.plot([-self.EPS for x in range(self.n_rows+1)],
-                 [x for x in range(-self.n_rows, 1)], linestyle="--", color="b")
-        plt.plot([self.n_cols-1 + self.EPS for x in range(self.n_rows+1)],
-                 [-x for x in range(self.n_rows+1)], linestyle="--", color="b")
+                 linestyle="--", color="b") #riga orizzontale in alto
+        plt.plot([-self.n_rows - self.EPS +1 for x in range(self.n_cols)],
+                 linestyle="--", color="b")  #riga orizzontale in basso
+        plt.plot([-self.EPS for x in range(self.n_rows)],
+                 [x for x in range(-self.n_rows+1, 1)], linestyle="--", color="b") #riga verticale sinistra
+        plt.plot([self.n_cols-1 + self.EPS for x in range(self.n_rows)],
+                 [-x for x in range(self.n_rows)], linestyle="--", color="b") #riga verticale destra
+        
+        plt.waitforbuttonpress(self.DELAY)
 
     """
   Mostra a schermo lo stato della simulazione.

@@ -17,7 +17,7 @@ class Constant_Reader:
     Crea l'oggetto ed effettua il parsing del file path. Salva in una struttura dati interna il risultato di tale operazione.
     """
 
-    def __init__(self, path="./costanti.json"):
+    def __init__(self, path="../CONSTANTS/costanti.json"):
         self.path = path
         self.constants = {}
         self.__parse()

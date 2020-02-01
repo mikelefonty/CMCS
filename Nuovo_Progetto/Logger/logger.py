@@ -18,7 +18,7 @@ class Logger:
         
         self.result_path= constants.get_result_directory() + "/"+result_path+".csv"
         
-        print(self.result_path)
+        #print(self.result_path)
         
         self.columns = columns
         self.append = append
@@ -28,8 +28,8 @@ class Logger:
         else:
             self.results_df = pd.read_csv(self.result_path)
 
-        print(self.results_df)
-        print(list(self.results_df.columns))
+        #print(self.results_df)
+        #print(list(self.results_df.columns))
         
 
     def get_column_names(self):

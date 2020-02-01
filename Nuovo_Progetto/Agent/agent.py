@@ -25,7 +25,8 @@ class Agent:
         dx,dy = direction.direction2pair()
         self.x = (self.x + dx) % n_rows
         self.y = (self.y + dy) % n_cols
-    
+        return self.x,self.y
+        
     def next_direction(self,env,k,verbose=False):
         return choose_direction(env,self.x,self.y,k,verbose)
        

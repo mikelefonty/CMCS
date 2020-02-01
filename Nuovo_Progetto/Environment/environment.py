@@ -49,5 +49,13 @@ class Environment:
             self.env_matrix[self.env_dict[agent_id][0],self.env_dict[agent_id][1]] = 0
             self.env_matrix[new_pos[0],new_pos[1]] = agent_id
             self.env_dict[agent_id] = new_pos
-        
+    
+    def get_environment_dimensions(self):
+        return self.n_rows,self.n_cols
+    
+    def get_agents_dict(self):
+        agent_dict = {}
+        for agent_id,agent_pos in self.env_dict.items():
+            agent_dict[agent_id] = agent_pos
+        return agent_dict
     
