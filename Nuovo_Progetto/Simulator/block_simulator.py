@@ -4,7 +4,6 @@ import numpy as np
 from Logger.logger import Logger
 from Simulator_Output.simulator_debug import Simulator_Debug
 from Agent.agent import Agent
-from Agent.smart_agent import SmartAgent
 from Environment.environment import Environment
 from Util.environment_IO import read_env_from_file
 from CONSTANTS.constant_reader import Constant_Reader
@@ -14,19 +13,16 @@ from Decide_Direction.decide_direction import sample_direction
 from Clustering.dbscan import DBSCAN 
 import tensorflow as tf
 from tensorflow import keras
+from Util.matrix_functions import extract_neighborhood,binarize_matrix
 
+class BlockSimulator:
 
-class Simulator:
-
-    def __init__(self,env_file,constants_path=None,show_anim=True,seed=42,use_random_selection=False,neigh_size=5,
-    use_stochastic_sim = True,log_file="risultati_standard_sim",use_nn = False):
+    def __init__(self,env_file,constants_path=None,show_anim=True,seed=42,use_random_selection=False,neigh_size=5,use_stochastic_sim = True,log_file="risultati_standard_sim"):
 
         if constants_path:
             self.constants = Constant_Reader(constants_path)
         else:
             self.constants = Constant_Reader()
-
-        self.use_nn = use_nn
 
         self.log_file = log_file
 
@@ -46,22 +42,13 @@ class Simulator:
         self.use_random_selection = use_random_selection
 
         self.env_rows, self.env_cols = self.env.get_environment_dimensions()
-
-
-        if use_nn:
-            assert 2<=self.neigh_size <= 11, 'La dimensione del neighborhood deve essere compresa in [2,11]'
-            print(f'Using my_model_{self.neigh_size + (self.neigh_size %2==0)}.h5')
-            self.model = keras.models.load_model(f'../Modelli/my_model_{self.neigh_size + (self.neigh_size %2==0)}.h5')
+      
+        self.model = keras.models.load_model(f'my_model_{self.neigh_size}.h5')
         
         self.agents = {}
-        
         for i in self.env.get_agents_id_list():
             x,y = self.env.get_agent_position(i)
-
-            if use_nn:
-                 self.agents[i] = SmartAgent(i,x,y,self.model)
-            else:
-                self.agents[i] = Agent(i,x,y)
+            self.agents[i] = Agent(i,x,y,self.model)
 
         if self.log_file:
             self.logger_clusters = Logger(self.constants,self.log_file+'_clusters',['Iterazione','Cluster','Positions'],append=False)
@@ -75,15 +62,13 @@ class Simulator:
             self.logger_clusters.add_row({'Iterazione':0,'Cluster':{},'Positions':self.env.get_agents_dict()})
      
         self.show_anim = show_anim
-        
         if show_anim:
             self.debug_sym = Simulator_Debug(self.constants,self.env_rows,self.env_cols)
 
 
 
-    def simulate(self,n_iters,verbose=0):
+    def simulate(self,n_iters):
         
-
         if self.log_file:
             self.logger_meta.add_row({'Numero_Righe':self.env_rows,'Numero_Colonne':self.env_cols,'Raggio_Vicinato':self.neigh_size,
                                     'Tipo_Simulatore':'Standard','Numero_Iterazioni':n_iters})
@@ -96,26 +81,44 @@ class Simulator:
         
         for i in range(n_iters):
             
-            if not self.show_anim:
-                print(f'Iterazione {i+1}/{n_iters}')
-
+           
             if i == 0 and not self.use_random_selection:
                agents_order = sorted(agents_order)
 
             if self.use_random_selection:   
                 np.random.shuffle(agents_order)
                
+            env_blocks = np.zeros((len(agents_order),self.neigh_size,self.neigh_size,1))
             
-            for agent in agents_order:
-             
-                direction_distribution = self.agents[agent].next_direction(self.env.get_env_matrix(),self.neigh_size,verbose=verbose)
+            for a in range(len(agents_order)):   
+                neigh =  binarize_matrix(extract_neighborhood(self.env.get_env_matrix(),
+                self.neigh_size, self.agents[agents_order[a]].get_current_position()[0], self.agents[agents_order[a]].get_current_position()[1]))
+                neigh[self.neigh_size // 2,self.neigh_size //2 ] = -1
+                env_blocks[a] = np.reshape(np.array(neigh,dtype=float),(self.neigh_size,self.neigh_size,1))
 
-                if self.use_stochastic_sim:
-                    best_direction = sample_direction(direction_distribution)
-                else:
-                    best_direction = Direction(np.argmax(direction_distribution))
+            num = 0  
+            for e in env_blocks:
+                print(f'NUM = {num}')
+                print(np.reshape(e,(3,3)))
+                print(env_blocks.shape)
+                num += 1
+
+            direction_distribution = np.around(self.model.predict(env_blocks),3)
+            print(direction_distribution)
+
+
+            #direction_distribution = self.agents[agent].next_direction(self.env.get_env_matrix(),self.neigh_size,verbose=False)
                
-             
+            for a in range(len(agents_order)):
+                if self.use_stochastic_sim:
+                    beautify_print_direction(np.reshape(direction_distribution[a,:],(1,9)))
+                    best_direction = sample_direction(np.reshape(direction_distribution[a,:],(1,9)))
+                else:
+                    best_direction = Direction(np.argmax(np.reshape(direction_distribution[a,:],(1,9))))
+                
+                
+                agent = agents_order[a]
+                print(f'Agente {agent} --> Move to {str(best_direction)}')
                 self.env.move_agent(agent,self.agents[agent].move(best_direction,self.env.get_env_matrix()))
             
 

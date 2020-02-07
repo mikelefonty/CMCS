@@ -10,7 +10,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 from Simulators.Simulator import *
 from Agents.Intelligent_Agents import *
-from keras.models import load_model
+from tensorflow.keras.models import load_model
 
 
 class IntelligentSim(Simulator):

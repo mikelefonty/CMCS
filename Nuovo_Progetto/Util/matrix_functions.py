@@ -127,3 +127,29 @@ def extract_sub_matrix(A, m, n, cx, cy):
     assert result.shape==(m,n)
     
     return result
+
+
+def pad_matrix(M, pad):
+    """
+    Applica il padding di zeri ad una matrice M.
+    :param M: Matrice a cui effettuare il padding
+    :param pad: Dimensione del padding da effettuare
+    :return: P: Matrice di dimensione (pad,pad), risultato del padding
+    """
+    assert pad >= min(M.shape[0], M.shape[1])
+    k = M.shape[0]
+    P = np.zeros((pad, pad))
+
+    n = M.shape[0]
+    m = M.shape[1]
+
+    if k % 2 == 1:
+        pn = int(np.ceil((pad - n) / 2.0))
+        pm = int(np.floor((pad - m) / 2.0))
+
+    else:
+        pn = int(np.ceil((pad - n) / 2.0)) - 1
+        pm = int(np.floor((pad - m) / 2.0))
+
+    P[pn:pn + n, pm:pm + m] = M
+    return P
