@@ -2,7 +2,6 @@ import sys
 sys.path.append('../')
 from Util.data_structures import Direction
 from Decide_Direction.decide_direction import choose_direction
-import tensorflow as tf
 from tensorflow import keras
 import numpy as np 
 from Util.matrix_functions import pad_matrix,extract_neighborhood,binarize_matrix

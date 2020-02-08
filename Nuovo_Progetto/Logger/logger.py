@@ -7,7 +7,7 @@ import os
 
 class Logger:
 
-    def __init__(self,constants,result_path,columns,append=False):
+    def __init__(self,constants,result_path,result_name,columns,append=False):
         assert isinstance(constants,Constant_Reader)
         assert isinstance(result_path,str)
         
@@ -16,8 +16,9 @@ class Logger:
         if not os.path.isdir(constants.get_result_directory()):
             os.makedirs(constants.get_result_directory())
         
-        self.result_path= constants.get_result_directory() + "/"+result_path+".json"
-        
+        self.result_path= constants.get_result_directory() + "/"+result_path
+        self.result_name = result_name+".json"
+
         #print(self.result_path)
         
         self.columns = columns
@@ -26,7 +27,7 @@ class Logger:
         if not append:
             self.results_df = pd.DataFrame(columns=self.columns)
         else:
-            self.results_df = pd.read_csv(self.result_path)
+            self.results_df = pd.read_csv(self.result_path+"/"+self.result_name)
 
         #print(self.results_df)
         #print(list(self.results_df.columns))
@@ -39,7 +40,7 @@ class Logger:
         self.results_df = self.results_df.append(pd.Series(row,index=self.results_df.columns),ignore_index=True)
     
     def save_results(self):
-        self.results_df.to_json(self.result_path)
+        self.results_df.to_json(self.result_path+"/"+self.result_name)
 
     def get_results(self):
         return self.results_df

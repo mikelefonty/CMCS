@@ -14,12 +14,15 @@ from Decide_Direction.decide_direction import sample_direction
 from Clustering.dbscan import DBSCAN 
 import tensorflow as tf
 from tensorflow import keras
-
-
+import os
+import logging
+logger = tf.get_logger()
+logger.setLevel(logging.ERROR)
+#tf.logging.set_verbosity(tf.logging.ERROR)
 class Simulator:
 
     def __init__(self,env_file,constants_path=None,show_anim=True,seed=42,use_random_selection=False,neigh_size=5,
-    use_stochastic_sim = True,log_file="risultati_standard_sim",use_nn = False):
+    use_stochastic_sim = True,log_path = ".",log_file="risultati_standard_sim",use_nn = False):
 
         if constants_path:
             self.constants = Constant_Reader(constants_path)
@@ -28,11 +31,13 @@ class Simulator:
 
         self.use_nn = use_nn
 
+        self.log_path = log_path
         self.log_file = log_file
 
         self.radius = self.constants.get_radius()
         self.min_pts = self.constants.get_min_pts()
         
+        self.env_file = env_file
         self.env = read_env_from_file(env_file)
 
 
@@ -64,11 +69,12 @@ class Simulator:
                 self.agents[i] = Agent(i,x,y)
 
         if self.log_file:
-            self.logger_clusters = Logger(self.constants,self.log_file+'_clusters',['Iterazione','Cluster','Positions'],append=False)
-            self.logger_measures = Logger(self.constants,self.log_file+'_measures',['Iterazione','Misura'],append=False)
-            self.logger_matrix = Logger(self.constants,self.log_file+'_matrix',['Iterazione','Ambiente'],append=False)
-            self.logger_meta = Logger(self.constants,self.log_file+'_meta',['Numero_Righe','Numero_Colonne','Raggio_Vicinato',
-                                                                            'Tipo_Simulatore','Numero_Iterazioni'],append=False)
+            self.logger_clusters = Logger(self.constants,self.log_path,self.log_file+'_clusters',['Iterazione','Cluster','Positions'],append=False)
+            self.logger_measures = Logger(self.constants,self.log_path,self.log_file+'_measures',['Iterazione','Misura'],append=False)
+            self.logger_matrix = Logger(self.constants,self.log_path,self.log_file+'_matrix',['Iterazione','Ambiente'],append=False)
+            self.logger_meta = Logger(self.constants,self.log_path,self.log_file+'_meta',['Nome_Ambiente','Numero_Righe','Numero_Colonne','Raggio_Vicinato',
+                                                                            'Tipo_Simulatore','Numero_Iterazioni',
+                                                                            'Scelta_Agenti','Strategia_Simulazione'],append=False)
             
 
             self.logger_matrix.add_row({'Iterazione':0,'Ambiente':np.copy(self.env.get_env_matrix())})
@@ -85,8 +91,29 @@ class Simulator:
         
 
         if self.log_file:
-            self.logger_meta.add_row({'Numero_Righe':self.env_rows,'Numero_Colonne':self.env_cols,'Raggio_Vicinato':self.neigh_size,
-                                    'Tipo_Simulatore':'Standard','Numero_Iterazioni':n_iters})
+
+            if self.use_nn:
+                sim_type = 'Smart'
+            else:
+                sim_type = 'Standard'
+
+            if self.use_random_selection:
+                sim_agent_sel = 'random'
+            else:
+                sim_agent_sel = 'sequential'
+
+            if self.use_stochastic_sim:
+                sim_strategy = 'stochastic'
+            else:
+                sim_strategy = 'deterministic'
+
+            self.logger_meta.add_row({'Nome_Ambiente':self.env_file,'Numero_Righe':self.env_rows,'Numero_Colonne':self.env_cols,
+                                    'Raggio_Vicinato':self.neigh_size,
+                                    'Tipo_Simulatore':sim_type,'Numero_Iterazioni':n_iters,
+                                    'Scelta_Agenti':sim_agent_sel,
+                                    'Strategia_Simulazione':sim_strategy
+                                    })
+                                    
             self.logger_meta.save_results()
 
         if self.show_anim:

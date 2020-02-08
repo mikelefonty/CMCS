@@ -16,6 +16,7 @@
         ],
 
     "RADIUS":5,
-    "MIN_PTS":2
+    "MIN_PTS":2,
+    "ENV_DIRECTORY":"../EnvSet"
 
 }

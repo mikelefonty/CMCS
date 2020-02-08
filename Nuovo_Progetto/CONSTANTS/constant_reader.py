@@ -83,3 +83,6 @@ class Constant_Reader:
     
     def get_min_pts(self):
         return self.constants['MIN_PTS']
+
+    def get_env_directory(self):
+        return self.constants['ENV_DIRECTORY']

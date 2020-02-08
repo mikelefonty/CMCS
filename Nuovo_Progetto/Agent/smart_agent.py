@@ -6,6 +6,11 @@ import tensorflow as tf
 import numpy as np 
 from Util.matrix_functions import extract_neighborhood,binarize_matrix,pad_matrix
 from Decide_Direction.decide_direction import choose_direction
+import os
+import logging
+logger = tf.get_logger()
+logger.setLevel(logging.ERROR)
+
 
 class SmartAgent(Agent):
 
@@ -19,7 +24,7 @@ class SmartAgent(Agent):
 
         if k%2 == 0:
             neigh = pad_matrix(neigh,k+1)
-        pred = self.model.predict(np.reshape(np.array(neigh,dtype=float),(1,k + (k%2==0) ,k + (k%2==0),1)))
+        pred = self.model.predict(np.reshape(np.array(neigh,dtype=float),(1,k + (k%2==0),k + (k%2==0),1)))
         
         if verbose >= 1:
             print('Agent ',self.id)
