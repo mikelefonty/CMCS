@@ -90,7 +90,12 @@ class BlockSimulator:
         self.blocks = []
         self.num_blocks = num_blocks
 
-        #self.__divide_into_blocks(self.env.get_agents_id_list())
+
+        if self.use_nn:
+            self.sim_type = 'Simulatore a blocchi Smart'
+        else:
+            self.sim_type = 'Simulatore a blocchi Standard'
+
        
 
     def __divide_into_blocks(self,agents_list):
@@ -150,7 +155,7 @@ class BlockSimulator:
             if self.show_anim and i ==0:
                 c,_ = DBSCAN(self.env.get_env_matrix(),self.env.get_agents_dict(),self.radius,self.min_pts)
                 self.debug_sym.update(self.env.get_agents_dict(),
-                                    new_title=f'Situazione iniziale\nNumero totale di clusters = {len(c.keys())}',
+                                    new_title=f'{self.sim_type}\nSituazione iniziale\nNumero totale di clusters = {len(c.keys())}',
                                     clusters = c)
 
             if not self.show_anim:
@@ -221,7 +226,7 @@ class BlockSimulator:
             
             if self.show_anim:
                 self.debug_sym.update(self.env.get_agents_dict(),
-                                    new_title=f'Iterazione {i+1}/{n_iters}\nNumero totale di clusters = {len(c.keys())}',
+                                    new_title=f'{self.sim_type}\nRaggio {self.neigh_size} Iterazione {i+1}/{n_iters}\nNumero totale di clusters = {len(c.keys())}',
                                     clusters = c)
             
             if self.log_file:

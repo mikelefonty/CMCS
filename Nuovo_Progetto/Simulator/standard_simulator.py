@@ -85,6 +85,10 @@ class Simulator:
         if show_anim:
             self.debug_sym = Simulator_Debug(self.constants,self.env_rows,self.env_cols)
 
+        if self.use_nn:
+            self.sim_type = 'Simulatore Smart'
+        else:
+            self.sim_type = 'Simulatore Standard'
 
 
     def simulate(self,n_iters,verbose=0):
@@ -149,8 +153,9 @@ class Simulator:
             c,_ = DBSCAN(self.env.get_env_matrix(),self.env.get_agents_dict(),self.radius,self.min_pts)
             
             if self.show_anim:
+                 
                 self.debug_sym.update(self.env.get_agents_dict(),
-                                    new_title=f'Iterazione {i+1}/{n_iters}\nNumero totale di clusters = {len(c.keys())}',
+                                    new_title=f'{self.sim_type}\nRaggio {self.neigh_size} Iterazione {i+1}/{n_iters}\nNumero totale di clusters = {len(c.keys())}',
                                     clusters = c)
             
             if self.log_file:
