@@ -17,8 +17,9 @@ def convert_dictionary(d):
 def replicate_simulation_from_file(file_path):
 
     constants = Constant_Reader()
+
     df = pd.read_json(constants.get_result_directory()+"/"+file_path+'_meta.json')
-    
+  
     
     n_rows= df.iloc[0]['Numero_Righe']
     n_cols = df.iloc[0]['Numero_Colonne']

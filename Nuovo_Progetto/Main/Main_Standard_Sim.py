@@ -10,7 +10,7 @@ from matplotlib import pyplot as plt
 import argparse
 import os
 from datetime import datetime
-
+from time import time
 
 
 def append_time_string(s):
@@ -47,6 +47,9 @@ if __name__ == "__main__":
 
     parser.add_argument("--replay", action="store_true",
                         help="Execute (another time) the animation of the all simulation")
+
+    parser.add_argument("--time",action="store_true" ,help="Measure the time needed to execute the program")
+    
     try:
 
         constants = Constant_Reader()
@@ -105,12 +108,19 @@ if __name__ == "__main__":
 
             print("-The results will be saved into the {} folder".format(results_path))
 
-
+        start_time = 0
+        if args.time:
+            start_time = time()
+        
         sim = Simulator(env_dir+"/"+env_path,use_nn=args.smart,
         show_anim=args.show_anim,seed=seed,use_random_selection=args.strat,neigh_size=args.k,
         use_stochastic_sim=args.stoc, log_path=results_path, log_file=result_name)
 
         sim.simulate(args.n_iters,verbose=args.verbose)
+
+        if args.time:
+            end_time = time()
+            print('Time = %.3f'%float(end_time-start_time))
 
         if args.replay:
             replicate_simulation_from_file(results_path+"/"+result_name)

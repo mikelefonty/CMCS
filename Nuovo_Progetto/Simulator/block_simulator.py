@@ -89,7 +89,7 @@ class BlockSimulator:
 
         self.blocks = []
         self.num_blocks = num_blocks
-
+        assert 1<=self.num_blocks <= self.env.get_number_of_agents(),"Il numero di blocchi deve essere <= del numero di agenti e  >= 1"
 
         if self.use_nn:
             self.sim_type = 'Simulatore a blocchi Smart'
@@ -195,21 +195,24 @@ class BlockSimulator:
                 else:
                     direction_distribution = np.zeros((stop-start,1,9))
                     for idx in range(start,stop):
+                        
                         current_agent = self.agents[agents_order[idx-1]]
+                        #print('Calcolo direzione per agente ',current_agent.get_id())
                         direction_distribution[idx-start,:] = current_agent.next_direction(self.env.get_env_matrix(),self.neigh_size,verbose=verbose)
 
 
                 for idx in range(start,stop):
                  
-
+                  
                     current_agent = self.agents[agents_order[idx-1]]
+                    #print('Muovo agente ',current_agent.get_id())
                     current_direction_distribution = np.reshape(direction_distribution[idx-start,:],(1,9))
                     if self.use_stochastic_sim:
                         best_direction = sample_direction(current_direction_distribution)
                     else:
                         best_direction = Direction(np.argmax(current_direction_distribution))
 
-                    self.env.move_agent(idx,current_agent.move(best_direction,self.env.get_env_matrix()))
+                    self.env.move_agent(current_agent.get_id(),current_agent.move(best_direction,self.env.get_env_matrix()))
                   
 
                 """
