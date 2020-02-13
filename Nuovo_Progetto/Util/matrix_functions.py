@@ -84,12 +84,6 @@ def __assign_resources(A, res_to_assign , center, limit):
         idx_argmin = np.argmin(resource_vec)
         idx_argmax = np.argmax(resource_vec)
 
-    """
-    print('Resource vector:', resource_vec)
-    print('argmin ', idx_argmin)
-    print('argmax ', idx_argmax)
-    """
-
     min_res_assigned = min(
         res_to_assign, resource_vec[idx_argmin], res_to_assign//2)
     max_res_assigned = min(
