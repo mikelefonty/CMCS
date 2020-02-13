@@ -27,8 +27,8 @@ if __name__ == "__main__":
     parser.add_argument("-k", type=int, choices=range(2,12), help="Neighborhood's size (default = 7)", default=7)
     parser.add_argument("n_iters", type=int, help="Number of iterations")
     
-    parser.add_argument("--strat", "-s", type=str, choices=["sequential", "random"], default="random",
-                        help="Specify how the agents are selected during simulation (default = random)")
+    parser.add_argument("--rand_strat", action="store_true",
+                        help="Use a random selection of the agents during the simulation")
 
     parser.add_argument("--time",action="store_true" ,help="Measure the time needed to execute the program")
     parser.add_argument("--stoc",action="store_true" ,help="Perform a stochastic simulation (otherwise it will be done a deterministic simulation)")
@@ -95,7 +95,10 @@ if __name__ == "__main__":
             else:
                 print("-Performing a deterministic simulation")
 
-            print("-Agents are selected in a {} way".format(args.strat))
+            if args.rand_strat:
+                print("-Agents are selected in a randomic way")
+            else:
+                print("-Agents are selected in a sequential way")
 
             if seed:
                 print("-Using {} as seed".format(seed))
@@ -113,7 +116,7 @@ if __name__ == "__main__":
        
 
         sim = BlockSimulator(env_dir+"/"+env_path,use_nn=args.smart,
-        show_anim=args.show_anim,seed=seed,use_random_selection=args.strat,neigh_size=args.k,
+        show_anim=args.show_anim,seed=seed,use_random_selection=args.rand_strat,neigh_size=args.k,
         use_stochastic_sim=args.stoc, log_path=results_path, log_file=result_name,num_blocks=args.blocks)
 
         start_time = 0
