@@ -1,3 +1,7 @@
+"""
+Questo file contiene l'implementazione di DBSCAN, algoritmo di clustering.
+"""
+
 import sys
 sys.path.append('../')
 import numpy as np 
@@ -23,7 +27,15 @@ def __expand_cluster(current_cluster_label,point,neighbors,clusters,visited_poin
 
 
 def DBSCAN(M,points_dict,eps,min_pts):
-
+    """
+    DBSCAN è un algoritmo di clustering basato su densità.
+    Data lo stato attuale dell'ambiente, rappresentato tramite matrice,
+    suddivide gli agenti in vari clusters. 
+    I parametri principali dell'algoritmo sono:
+        - eps : Raggio del vicinato da utilizzare
+        - min_pts : Numero minimo di agenti che devono essere presenti nel vicinato, compreso l'agente su cui è centrato il vicinato,
+                    affinché l'agente possa essere classificato come un CORE point.
+    """
     current_cluster_label = -1
 
     visited_points = {}
@@ -53,13 +65,7 @@ def DBSCAN(M,points_dict,eps,min_pts):
             points_class[point] = 'core'
         else:
             points_class[point] = 'noise'
-    """
-    print(f'Test DBSCAN: eps = {eps} min_pts = {min_pts} Matrice:\n{M}\n')
-
-    for point in visited_points.keys():
-       print(f'{point} : Classe = {points_class[point]} Vicini = {neighbors[point]}')
-    """
-    
+ 
     for point in visited_points.keys():
         if visited_points[point] == 0:
             visited_points[point] = 1
@@ -68,7 +74,6 @@ def DBSCAN(M,points_dict,eps,min_pts):
                 clusters[current_cluster_label] = []
                 __expand_cluster(current_cluster_label, point,neighbors,clusters,visited_points,points_class,points_label, eps,min_pts)
               
-    
     
     for point in points_label.keys():
         if points_label[point] == -1:
@@ -84,12 +89,6 @@ def DBSCAN(M,points_dict,eps,min_pts):
 
     mean_cluster_size /= n_clusters
     
-    """
-    print('Matrice:\n',M)
-    for c in clusters:
-        print(f'Cluster {c} : {sorted(clusters[c])}')
-    print('Dimensione media ',mean_cluster_size)
-    """
     return clusters,np.around(mean_cluster_size,3)
   
 

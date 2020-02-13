@@ -1,3 +1,7 @@
+"""
+Questo file contiene l'implementazione di un generico agente smart.
+"""
+
 import sys
 sys.path.append('../')
 sys.path.append('./')
@@ -15,10 +19,20 @@ logger.setLevel(logging.ERROR)
 class SmartAgent(Agent):
 
     def __init__(self,agent_id,x,y,model):
+        """
+        Costruisce un agente smart.
+        Oltre ai parametri necessari per istanziare un generico agente,
+        si passa il modello di rete neurale da utilizzare per le future predizioni
+        """
         super().__init__(agent_id,x,y)
         self.model = model
 
     def next_direction(self,env,k,verbose=0):
+        """
+        Calcola la distribuzione di probabilità della direzione da scegliere,
+        mediante l'utilizzo della rete neurale.
+        """
+        
         neigh = binarize_matrix(extract_neighborhood(env,k,self.x,self.y))
         neigh[k//2,k//2] = -1
 

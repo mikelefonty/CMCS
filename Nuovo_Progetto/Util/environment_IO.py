@@ -1,3 +1,7 @@
+"""
+Questo file contiene funzioni che permettono l'interazione tra ambiente e filesystem.
+"""
+
 import sys
 sys.path.append('../')
 import numpy as np

@@ -35,7 +35,7 @@ if __name__ == "__main__":
         result_name = args.res_name
         print(results_path+"/"+result_name)
        
-        replicate_simulation_from_file(args.path+"/"+result_name)
+        replicate_simulation_from_file(results_path+"/"+result_name)
     
     except Exception as e:
         print(e)

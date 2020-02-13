@@ -1,10 +1,14 @@
+"""
+Questo file contiene l'implementazione della funzione utilizzata per calcolare la distribuzione di 
+probabilità della direzione da scegliere.
+"""
+import sys
+sys.path.append('../')
 from Util.matrix_functions import extract_neighborhood, extract_sub_matrix, binarize_matrix
 import math
 import numpy as np
 from Util.data_structures import Direction
 from Util.print_utils import beautify_print_direction
-import sys
-sys.path.append('../')
 
 
 def choose_direction(M, x, y, k, verbose=False):
@@ -13,11 +17,12 @@ def choose_direction(M, x, y, k, verbose=False):
 
     M_neigh = extract_neighborhood(M, k, x, y)
     
+    """
+    Vicinato completamente vuoto => Ogni direzione è equiprobabile
+    """
     if np.sum(M_neigh) == -1:
         for d in Direction:
-     
             if not d == Direction.NONE:
-             
                 direction_distribution[:,d.value] = 1
     
     else:
@@ -30,6 +35,9 @@ def choose_direction(M, x, y, k, verbose=False):
                         print(d)
                         print(f'Neighborhood =\n{M_neigh}\n')
 
+                    """
+                    Estraggo la sottomatrice centrata nel punto medio della direzione d
+                    """
                     M_sub = extract_sub_matrix(M_neigh, math.ceil(
                         k/2), math.ceil(k/2), center + math.ceil(k/4)*dx, center + math.ceil(k/4)*dy)
 
@@ -42,10 +50,16 @@ def choose_direction(M, x, y, k, verbose=False):
                     direction_distribution[:, d.value] = np.sum(
                         binarize_matrix(M_sub, thresh=1))
 
+        """
+        Nessuna direzione è disponibile => Direzione = NONE con probabilità 1
+        """
         if np.sum(direction_distribution) == 0:
             direction_distribution[:, Direction.NONE] = 1
 
-
+    """
+    Ottengo la distribuzione di probabilità richiesta
+    """
+    
     direction_distribution = np.around(direction_distribution / np.sum(direction_distribution),3)
     if verbose:
         print(f'Distribuzione ottenuta = \n')
