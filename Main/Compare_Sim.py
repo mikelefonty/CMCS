@@ -121,7 +121,7 @@ if __name__ == "__main__":
         
         
         smart_sim = Simulator(env_dir+"/"+env_path,use_nn=True,
-        show_anim=args.show_anim,seed=seed,use_random_selection=args.strat,neigh_size=args.k,
+        show_anim=args.show_anim,seed=seed,use_random_selection=args.rand_strat,neigh_size=args.k,
         use_stochastic_sim=args.stoc, log_path=results_path, log_file=result_name_smart)
 
 

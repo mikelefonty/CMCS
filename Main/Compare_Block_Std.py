@@ -132,7 +132,7 @@ if __name__ == "__main__":
         
         
         block_sim = BlockSimulator(env_dir+"/"+env_path,use_nn=args.smart,
-        show_anim=args.show_anim,seed=seed,use_random_selection=args.strat,neigh_size=args.k,num_blocks=args.blocks,
+        show_anim=args.show_anim,seed=seed,use_random_selection=args.rand_strat,neigh_size=args.k,num_blocks=args.blocks,
         use_stochastic_sim=args.stoc, log_path=results_path, log_file=result_name_block)
 
 
