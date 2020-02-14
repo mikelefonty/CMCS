@@ -1,0 +1,22 @@
+#Crea un nuovo ambiente 5x5 con 23 agenti nel file env_5x5_23
+python Create_Env.py . env_5x5_23 5 5 23
+
+
+#Lancia un simulatore standard smart sull'ambiente env_50x50_60 per 100 iterazioni e raggio vicinato pari a 7
+python Main_Standard_Sim.py env_50x50_60.txt 100 -k 7 --smart --rand_strat --stoc --path Prova_Std/Env_50x50_60 --res_name confronto_50x50_60
+
+
+#Lancia un simulatore a blocchi smart sull'ambiente env_50x50_60 per 100 iterazioni e raggio vicinato pari a 7 e numero di blocchi pari a 15
+python Main_Block_Sim.py env_50x50_60.txt 100  --blocks 15 --smart -k 7 --rand_strat --stoc --path Prova_Block/Env_50x50_60 --res_name risultati_50x50_60 
+
+
+#Compara tra loro il simulatore a blocchi e quello standard sull'ambiente env_50x50_60 per 100 iterazioni usando la versione smart
+python Compare_Block_Std.py env_50x50_60.txt 100  -k 7 --blocks 15 --smart --rand_strat --stoc --path Prova_Compare/Env_50x50_60 --res_name confronto_50x50_60
+
+
+#Compara la versione smart e "normale" del simulatore standard su env_50x50_60.txt per 100 iterazioni e usando come raggio di vicinato 7
+python Compare_Sim.py env_50x50_60.txt 100 -k 7 --rand_strat --stoc --path Prova_Compare/Env_50x50_60 --res_name confronto_50x50_60 
+
+
+#Fa il replay della simulazione contenuta in Results/Confronto_Sim/Env_50x50_60/confronto_50x50_60_smart
+python Replay_Sim.py Confronto_Sim/Env_50x50_60 confronto_50x50_60_smart
